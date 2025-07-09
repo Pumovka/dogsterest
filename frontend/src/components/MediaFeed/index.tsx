@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Dog, DogsResponse } from "../../types/dog";
-import { getLikedDogs } from "../../api/api";
 import "./styles.css";
 import MediaItem from "../MediaItem";
 
@@ -14,7 +13,7 @@ const MediaFeed = ({ fetchDogs }: MediaFeedProps) => {
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [userLikes, setUserLikes] = useState<Record<string, boolean>>(() =>
+  const [userLikes, setUserLikes] = useState(() =>
     JSON.parse(localStorage.getItem("userLikes") || "{}")
   );
 
@@ -27,8 +26,8 @@ const MediaFeed = ({ fetchDogs }: MediaFeedProps) => {
         const uniqueNewDogs = newDogs.filter((dog) => !existingIds.has(dog.id));
         return [...prev, ...uniqueNewDogs];
       });
+      setPage(page + 1);
       setHasMore(newDogs.length === 20);
-      setPage((prev) => prev + 1);
     } else {
       setHasMore(false);
     }
@@ -44,15 +43,9 @@ const MediaFeed = ({ fetchDogs }: MediaFeedProps) => {
 
   const updateLikes = (id: string, newLikes: number) => {
     setDogs((prev) =>
-      prev
-        .map((dog) => (dog.id === id ? { ...dog, likes: newLikes } : dog))
-        .filter(
-          (dog) => fetchDogs !== getLikedDogs || userLikes[id] || newLikes > 0
-        )
+      prev.map((dog) => (dog.id === id ? { ...dog, likes: newLikes } : dog))
     );
   };
-
-  const breakpoints = { default: 4, 1100: 3, 700: 2, 500: 1 };
 
   if (!dogs.length && !hasMore) return <div>Нет медиа</div>;
 
@@ -64,9 +57,9 @@ const MediaFeed = ({ fetchDogs }: MediaFeedProps) => {
       loader={<h4>Загрузка...</h4>}
     >
       <Masonry
-        breakpointCols={breakpoints}
+        breakpointCols={{ default: 4, 1100: 3, 700: 2, 500: 1 }}
         className="masonry-grid"
-        columnClassName="masonry-grid_column"
+        columnClassName="masonry-grid-column"
       >
         {dogs.map((dog) => (
           <MediaItem
