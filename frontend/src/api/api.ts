@@ -13,11 +13,24 @@ export const getDogs = async (page: number = 1, perPage: number = 20): Promise<D
     }
 };
 
-export const getLikedDogs = async (page: number = 1, perPage: number = 20): Promise<DogsResponse> => {
+export const getLikedDogs = async (): Promise<DogsResponse> => {
     try {
         const userLikes = JSON.parse(localStorage.getItem('userLikes') || '{}');
-        const response = await api.get(`/api/dogs?page=${page}&perPage=${perPage}`);
-        return response.data.filter((dog: Dog) => userLikes[dog.id]);
+        let allDogs: Dog[] = [];
+        let page = 1;
+        const perPage = 20;
+
+        // Загружаем все посты, пока они есть
+        while (true) {
+            const response = await api.get(`/api/dogs?page=${page}&perPage=${perPage}`);
+            const newDogs = response.data;
+            allDogs = [...allDogs, ...newDogs];
+            if (newDogs.length < perPage) break; // Если данных меньше, чем perPage, это последняя страница
+            page++;
+        }
+
+        // Фильтруем только лайкнутые посты
+        return allDogs.filter((dog: Dog) => userLikes[dog.id]);
     } catch (error) {
         console.log('Ошибка в getLikedDogs:', error);
         return [];
