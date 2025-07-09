@@ -6,5 +6,3 @@ export interface Dog {
   likes: number;
   fileType: 'image' | 'video';
 }
-
-export type DogsResponse = Dog[];
