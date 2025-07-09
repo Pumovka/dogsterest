@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { Dog } from "../../types/dog";
 import { toggleLike } from "../../api/api";
@@ -23,7 +24,7 @@ const MediaItem = ({
       setUserLikes({ ...userLikes, [dog.id]: !isLiked });
       updateLikes(dog.id, newLikes);
     } catch (error) {
-      console.log("Ошибка с лайком:", error);
+      console.error("Ошибка с лайком:", error);
     }
   };
 
@@ -36,6 +37,7 @@ const MediaItem = ({
           <video src={dog.url} controls className="media" />
         )}
       </Link>
+
       <div className="likes-overlay">
         <button onClick={onLikeClick} className={"like-button"}>
           {userLikes[dog.id] ? "❤️" : "🤍"}
