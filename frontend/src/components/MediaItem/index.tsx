@@ -1,14 +1,13 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Dog } from "../../types/dog";
 import { toggleLike } from "../../api/api";
+import "./styles.css";
 
 interface MediaItemProps {
   dog: Dog;
   userLikes: Record<string, boolean>;
-  setUserLikes: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-  updateLikes: (id: string, newLikes: number) => void;
-  isDetailPage?: boolean;
+  setUserLikes: (likes: Record<string, boolean>) => void;
+  updateLikes: (id: string, likes: number) => void;
 }
 
 const MediaItem = ({
@@ -16,43 +15,35 @@ const MediaItem = ({
   userLikes,
   setUserLikes,
   updateLikes,
-  isDetailPage = false,
 }: MediaItemProps) => {
-  const handleLike = async (id: string) => {
-    const isLiked = userLikes[id];
-    const newLikes = await toggleLike(id, isLiked);
-    updateLikes(id, isLiked ? newLikes : Math.max(newLikes, 1));
-    setUserLikes((prev) => ({ ...prev, [id]: !isLiked }));
+  const onLikeClick = async () => {
+    const isLiked = userLikes[dog.id];
+    try {
+      const newLikes = await toggleLike(dog.id, isLiked);
+      setUserLikes({ ...userLikes, [dog.id]: !isLiked });
+      updateLikes(dog.id, newLikes);
+    } catch (error) {
+      console.error("Ошибка при обработке лайка:", error);
+    }
   };
 
+  const displayLikes = userLikes[dog.id] ? dog.likes + 1 : dog.likes;
+
   return (
-    <div className={isDetailPage ? "detail-page" : "media-item"}>
-      {isDetailPage ? (
-        dog.fileType === "image" ? (
+    <div className="media-item">
+      <Link to={`/dog/${dog.filename}`}>
+        {dog.fileType === "image" ? (
           <img src={dog.url} alt={dog.filename} className="media" />
         ) : (
           <video src={dog.url} controls className="media" />
-        )
-      ) : (
-        <Link to={`/dog/${dog.filename}`}>
-          {dog.fileType === "image" ? (
-            <img src={dog.url} alt={dog.filename} className="media" />
-          ) : (
-            <video src={dog.url} controls className="media" />
-          )}
-        </Link>
-      )}
+        )}
+      </Link>
       <div className="likes-overlay">
-        <button
-          onClick={() => handleLike(dog.id)}
-          className={`like-button ${userLikes[dog.id] ? "liked" : ""}`}
-        >
+        <button onClick={onLikeClick} className={"like-button"}>
           {userLikes[dog.id] ? "❤️" : "🤍"}
         </button>
-        {(dog.likes > 0 || userLikes[dog.id]) && (
-          <span className="likes-count">
-            {userLikes[dog.id] ? Math.max(dog.likes, 1) : dog.likes}
-          </span>
+        {displayLikes > 0 && (
+          <span className="likes-count">{displayLikes}</span>
         )}
       </div>
     </div>

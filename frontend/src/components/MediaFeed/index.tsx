@@ -47,12 +47,11 @@ const MediaFeed = ({ fetchDogs }: MediaFeedProps) => {
       prev
         .map((dog) => (dog.id === id ? { ...dog, likes: newLikes } : dog))
         .filter(
-          (dog) => fetchDogs !== getLikedDogs || userLikes[id] || newLikes > 0
+          (dog) =>
+            fetchDogs !== getLikedDogs || userLikes[dog.id] || dog.likes > 0
         )
     );
   };
-
-  const breakpoints = { default: 4, 1100: 3, 700: 2, 500: 1 };
 
   if (!dogs.length && !hasMore) return <div>Нет медиа</div>;
 
@@ -64,9 +63,9 @@ const MediaFeed = ({ fetchDogs }: MediaFeedProps) => {
       loader={<h4>Загрузка...</h4>}
     >
       <Masonry
-        breakpointCols={breakpoints}
+        breakpointCols={{ default: 4, 1100: 3, 700: 2, 500: 1 }}
         className="masonry-grid"
-        columnClassName="masonry-grid_column"
+        columnClassName="masonry-grid-column"
       >
         {dogs.map((dog) => (
           <MediaItem

@@ -2,7 +2,7 @@ import MediaFeed from "../MediaFeed";
 import { getLikedDogs } from "../../api/api";
 const LikedPage = () => (
   <div>
-    <h1>Избранное</h1>
+    <h4>Вам понравилось</h4>
     <MediaFeed fetchDogs={getLikedDogs} />
   </div>
 );

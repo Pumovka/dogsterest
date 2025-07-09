@@ -1,11 +1,8 @@
 .detail-page {
+  max-width: 600px;
   text-align: center;
-  padding: 20px;
-}
-
-.media {
-  max-width: 800px;
   width: 100%;
   height: auto;
   position: relative;
+  padding: 20px;
 }
