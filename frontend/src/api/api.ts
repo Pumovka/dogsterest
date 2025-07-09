@@ -16,20 +16,10 @@ export const getDogs = async (page: number = 1, perPage: number = 20): Promise<D
 export const getLikedDogs = async (page: number = 1, perPage: number = 20): Promise<DogsResponse> => {
     try {
         const userLikes = JSON.parse(localStorage.getItem('userLikes') || '{}');
-        let likedDogs: DogsResponse = [];
-        let currentPage = page;
-        const maxPages = 10;
-
-        while (likedDogs.length < perPage && currentPage <= maxPages) {
-            const { data } = await api.get<DogsResponse>(`/api/dogs?page=${currentPage}&perPage=${perPage}`);
-            likedDogs = [...likedDogs, ...data.filter((dog) => userLikes[dog.id])];
-            if (data.length < perPage) break;
-            currentPage++;
-        }
-
-        return likedDogs.slice(0, perPage);
+        const response = await api.get(`/api/dogs?page=${page}&perPage=${perPage}`);
+        return response.data.filter((dog: Dog) => userLikes[dog.id]);
     } catch (error) {
-        console.error('Error in getLikedDogs:', error);
+        console.log('Ошибка в getLikedDogs:', error);
         return [];
     }
 };

@@ -17,17 +17,15 @@ const MediaItem = ({
   updateLikes,
 }: MediaItemProps) => {
   const onLikeClick = async () => {
-    const isLiked = userLikes[dog.id];
+    const isLiked = userLikes[dog.id] || false;
     try {
       const newLikes = await toggleLike(dog.id, isLiked);
       setUserLikes({ ...userLikes, [dog.id]: !isLiked });
       updateLikes(dog.id, newLikes);
     } catch (error) {
-      console.error("Ошибка при обработке лайка:", error);
+      console.log("Ошибка с лайком:", error);
     }
   };
-
-  const displayLikes = userLikes[dog.id] ? dog.likes + 1 : dog.likes;
 
   return (
     <div className="media-item">
@@ -42,9 +40,7 @@ const MediaItem = ({
         <button onClick={onLikeClick} className={"like-button"}>
           {userLikes[dog.id] ? "❤️" : "🤍"}
         </button>
-        {displayLikes > 0 && (
-          <span className="likes-count">{displayLikes}</span>
-        )}
+        {dog.likes > 0 && <span className="likes-count">{dog.likes}</span>}
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import "./styles.css";
 const DetailPage = () => {
   const { filename } = useParams<{ filename: string }>();
   const [dog, setDog] = useState<Dog | null>(null);
-  const [userLikes, setUserLikes] = useState<Record<string, boolean>>(() =>
+  const [userLikes, setUserLikes] = useState(() =>
     JSON.parse(localStorage.getItem("userLikes") || "{}")
   );
 
@@ -23,7 +23,9 @@ const DetailPage = () => {
   }, [userLikes]);
 
   const updateLikes = (id: string, newLikes: number) => {
-    setDog((prev) => (prev ? { ...prev, likes: newLikes } : prev));
+    if (dog && dog.id === id) {
+      setDog({ ...dog, likes: newLikes });
+    }
   };
 
   if (!dog) return <div>Медиа не найдено</div>;
